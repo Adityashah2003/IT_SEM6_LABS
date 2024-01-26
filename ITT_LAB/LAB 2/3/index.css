@@ -1,0 +1,19 @@
+h1 {
+    color: navy;
+    margin-left: 20px;
+    text-align: center;
+}
+
+ol {
+    list-style-type: decimal;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding: 15px;
+    width: 100%;
+}
+
+span {
+    color: red;
+}
