@@ -1,0 +1,9 @@
+.para {
+    width: 200px;
+    height: 50px;
+    position: absolute;
+    overflow: hidden;
+}
+#para1 { background-color: lightblue; z-index: 1; }
+#para2 { background-color: lightgreen; z-index: 2; top: 20px; }
+#para3 { background-color: lightpink; z-index: 3; top: 40px; }

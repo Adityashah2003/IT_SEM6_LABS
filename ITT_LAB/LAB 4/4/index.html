@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>USN and Semester Form</title>
+    <script type="text/javascript" src="index.js"></script>
+</head>
+<body>
+    <form name="usnForm" onsubmit="return validateForm()" action="#">
+        <label for="usn">USN:</label><br>
+        <input type="text" id="usn" name="usn"><br>
+        <label for="semester">Current Semester:</label><br>
+        <input type="number" id="semester" name="semester" min="1" max="8"><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
