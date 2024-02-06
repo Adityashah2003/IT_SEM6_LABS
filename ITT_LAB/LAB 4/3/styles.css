@@ -4,6 +4,6 @@
     position: absolute;
     overflow: hidden;
 }
-#para1 { background-color: lightblue; z-index: 1; }
-#para2 { background-color: lightgreen; z-index: 2; top: 20px; }
-#para3 { background-color: lightpink; z-index: 3; top: 40px; }
+#para1 { background-color: yellow; z-index: 1; }
+#para2 { background-color: green; z-index: 2; top: 20px; }
+#para3 { background-color: red; z-index: 3; top: 40px; }

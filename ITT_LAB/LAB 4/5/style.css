@@ -12,6 +12,6 @@ body {
 #output {
   grid-column: 1 / 5;
   height: 30px;
-  border: 0.1px solid grey;
+  border: 0.1px solid blue;
   border-radius: 2px;
 }

@@ -4,9 +4,6 @@ function num(){
     var arr = temp.split(")");
     var areacode = arr[0].substring(1,arr[0].length);
     var phoneno = arr[1].substring(0,arr[1].length);
-    console.log(areacode);
-    console.log(phoneno);
-    
     document.getElementById("area").innerHTML= "Area code: " + areacode;
     document.getElementById("no").innerHTML= "Phone no: "+phoneno;
 }

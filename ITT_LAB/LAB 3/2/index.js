@@ -8,8 +8,7 @@ function printLatin(text) {
         var s = "";
         s = temp.substring(1, temp.length);
         s += temp.charAt(0);
-        s += "ay";
-        // document.getElementById("output").textContent = s;        
+        s += "ay"; 
         document.getElementById("output").innerHTML = s;  
     }
 }
