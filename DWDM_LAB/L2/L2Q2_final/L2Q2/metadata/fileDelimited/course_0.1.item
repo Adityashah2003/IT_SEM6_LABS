@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:TalendMetadata="http://www.talend.org/metadata/connection/2010" xmlns:orgomg.cwm.resource.record="http:///orgomg/cwm/resource/record.ecore">
+  <TalendMetadata:DelimitedFileConnection xmi:id="_FBnYIMc7Ee6uBLL9xuPp_w" name="course" dataPackage="_FBnYIcc7Ee6uBLL9xuPp_w" Server="Localhost 127.0.0.1" FilePath="C:/Users/Aditya/OneDrive - Manipal Academy of Higher Education/Desktop/MIT/DWDM Lab/L2/Course.csv" Format="WINDOWS" Encoding="ISO-8859-15" FieldSeparatorValue="&quot;,&quot;" RowSeparatorValue="&quot;\n&quot;" UseHeader="true" HeaderValue="1" FooterValue="0" LimitValue="" FirstLineCaption="true" RemoveEmptyRow="true" EscapeType="CSV" EscapeChar="&quot;\&quot;&quot;" TextEnclosure="&quot;\&quot;&quot;" CsvOption="true" FieldSeparatorType="Comma"/>
+  <orgomg.cwm.resource.record:RecordFile xmi:id="_FBnYIcc7Ee6uBLL9xuPp_w" name="default" dataManager="_FBnYIMc7Ee6uBLL9xuPp_w">
+    <ownedElement xsi:type="TalendMetadata:MetadataTable" xmi:id="_FBnYIsc7Ee6uBLL9xuPp_w" id="_AHV2gMc7Ee6uBLL9xuPp_w" label="metadata">
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_FBnYI8c7Ee6uBLL9xuPp_w" label="Course_id" length="2" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_FBnYJMc7Ee6uBLL9xuPp_w" label="Cname" length="9" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+      <feature xsi:type="TalendMetadata:MetadataColumn" xmi:id="_FBnYJcc7Ee6uBLL9xuPp_w" label="Dept" length="3" talendType="id_String" pattern="&quot;dd-MM-yyyy&quot;"/>
+    </ownedElement>
+  </orgomg.cwm.resource.record:RecordFile>
+</xmi:XMI>
