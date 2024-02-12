@@ -1,19 +1,17 @@
-var i, j, k;
-var str;
-function permutation() {
-    var out = "";
-  var text = document.getElementById("input").value;
-  for (i = 0; i < 3; i++) {
-    str = text.charAt(i);
-    for (j = i + 1; j < 4; j++) {
-      str += text.charAt(j);
-      for (k = j + 1; k < 5; k++) {
-        str += text.charAt(k);
-        out += str + ",";
-        str = str.substring(0, 2);
+function combinations(str) {
+  let result = [];
+  for(let i = 0; i < str.length; i++) {
+      for(let j = i + 1; j < str.length; j++) {
+          for(let k = j + 1; k < str.length; k++) {
+              result.push(str[i] + str[j] + str[k]);
+          }
       }
-      str = str.substring(0, 1);
-    }
   }
-  document.getElementById("output").textContent = out;
+  return result;
+}
+
+function permutation() {
+  let text = document.getElementById("input").value;
+  let output = combinations(text).join(",");
+  document.getElementById("output").textContent = output;
 }

@@ -12,3 +12,4 @@ function printLatin(text) {
         document.getElementById("output").innerHTML = s;  
     }
 }
+    
