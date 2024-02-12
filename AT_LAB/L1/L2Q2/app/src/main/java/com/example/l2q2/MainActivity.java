@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText emailEditText, mobileEditText, passwordEditText;
+    private EditText emailText, mobileText, passwordText;
     private Button registerButton;
 
     @Override
@@ -20,21 +20,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        emailEditText = findViewById(R.id.email1);
-        mobileEditText = findViewById(R.id.mobile1);
-        passwordEditText = findViewById(R.id.password1);
+        emailText = findViewById(R.id.email1);
+        mobileText = findViewById(R.id.mobile1);
+        passwordText = findViewById(R.id.password1);
         registerButton = findViewById(R.id.register);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = emailEditText.getText().toString().trim();
-                String mobile = mobileEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString().trim();
+                String email = emailText.getText().toString().trim();
+                String mobile = mobileText.getText().toString().trim();
+                String password = passwordText.getText().toString().trim();
 
                 if (isValidEmail(email) && isValidMobile(mobile)) {
                     Toast.makeText(MainActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                    // Store the data
                 } else {
                     Toast.makeText(MainActivity.this, "Invalid Email or Mobile Number", Toast.LENGTH_SHORT).show();
                 }
