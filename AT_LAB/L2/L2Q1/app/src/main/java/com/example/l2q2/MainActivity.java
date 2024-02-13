@@ -42,6 +42,5 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, groc.get(position), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

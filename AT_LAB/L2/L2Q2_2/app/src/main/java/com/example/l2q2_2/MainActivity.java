@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 name = intxt.getText().toString();
                 newname = encrypt(name);
-                //Toast.makeText(MainActivity.this,"input: "+ name,Toast.LENGTH_LONG).show();
                 Toast.makeText(MainActivity.this,"output: "+newname ,Toast.LENGTH_LONG).show();
             }
         });

@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText nameEditText, emailEditText, commentsEditText;
+    private EditText nameText, emailText, commentsText;
     private RadioGroup radioGroup;
     private RatingBar ratingBar;
 
@@ -22,9 +22,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        nameEditText = findViewById(R.id.name);
-        emailEditText = findViewById(R.id.email);
-        commentsEditText = findViewById(R.id.comments);
+        nameText = findViewById(R.id.name);
+        emailText = findViewById(R.id.email);
+        commentsText = findViewById(R.id.comments);
         radioGroup = findViewById(R.id.radio);
         ratingBar = findViewById(R.id.rating);
 
@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = nameEditText.getText().toString();
-                String email = emailEditText.getText().toString();
-                String comments = commentsEditText.getText().toString();
+                String name = nameText.getText().toString();
+                String email = emailText.getText().toString();
+                String comments = commentsText.getText().toString();
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 RadioButton radioButton = findViewById(selectedId);
                 String gender = radioButton.getText().toString();
