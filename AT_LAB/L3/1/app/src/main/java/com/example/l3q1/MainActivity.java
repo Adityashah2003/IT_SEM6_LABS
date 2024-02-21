@@ -34,13 +34,13 @@ class ImageAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View v, ViewGroup parent) {
         ImageView imageView;
-        if (convertView == null) {
+        if (v == null) {
             imageView = new ImageView(context);
             imageView.setLayoutParams(new GridView.LayoutParams(300, 300));
         } else {
-            imageView = (ImageView) convertView;
+            imageView = (ImageView) v;
         }
 
         imageView.setImageResource(items[position]);

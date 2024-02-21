@@ -21,16 +21,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerView rv = findViewById(R.id.rv);
-        rv.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<question> ques = new ArrayList<>();
+        ArrayList<question> ques = new ArrayList<question>();
         ques.add(new question("Question 1", "Option A", "Option B", "Option C", "Option A"));
         ques.add(new question("Question 2", "Option A", "Option B", "Option C", "Option B"));
         ques.add(new question("Question 3", "Option A", "Option B", "Option C", "Option C"));
         ques.add(new question("Question 4", "Option A", "Option B", "Option C", "Option A"));
 
-        adapter = new quesAdapter(ques);
+        RecyclerView rv = findViewById(R.id.rv);
+        rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        adapter = new quesAdapter(this,ques);
         rv.setAdapter(adapter);
 
         Button submitButton = findViewById(R.id.submit_button);

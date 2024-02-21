@@ -1,51 +1,43 @@
 package com.example.notifs;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
-import androidx.core.app.NotificationCompat;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-
-    Button button;
-
-    @Override
+    EditText ed1,ed2,ed3;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button = findViewById(R.id.button);
+        ed1=(EditText)findViewById(R.id.editText);
+        ed2=(EditText)findViewById(R.id.editText2);
+        ed3=(EditText)findViewById(R.id.editText3);
+        Button b1=(Button)findViewById(R.id.button);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String tittle=ed1.getText().toString().trim();
+                String subject=ed2.getText().toString().trim();
+                String body=ed3.getText().toString().trim();
 
-                createNotification();
+                NotificationManager notif=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                Notification notify=new Notification.Builder
+                        (getApplicationContext()).setContentTitle(tittle).setContentText(body).
+                        setContentTitle(subject).setSmallIcon(R.drawable.sample).build();
+
+                notify.flags |= Notification.FLAG_AUTO_CANCEL;
+                notif.notify(0, notify);
             }
         });
-    }
-
-    private void createNotification() {
-        Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.sample)
-                .setContentTitle("My notification")
-                .setContentText("Hello World!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(0, builder.build());
     }
 }

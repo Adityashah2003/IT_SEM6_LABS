@@ -1,10 +1,9 @@
 package com.example.l4q1;
 
-import java.util.List;
+import android.content.Context;
 
 public class question {
     private String qText,op1,op2,op3,ans,selectedOption;
-
     public question(String qText, String op1, String op2, String op3, String ans) {
         this.qText = qText;
         this.op1 = op1;
@@ -13,20 +12,22 @@ public class question {
         this.ans = ans;
     }
 
-    public static question get(List<question> questions, int position) {
-        if (position >= 0 && position < questions.size()) {
-            return questions.get(position);
-        } else {
-            return null;
-        }
-    }
+//    public static question get(List<question> questions, int position) {
+//        if (position >= 0 && position < questions.size()) {
+//            return questions.get(position);
+//        } else {
+//            return null;
+//        }
+//    }
 
     public void setSelectedOption(String selectedOption) {
         this.selectedOption = selectedOption;
     }
-
     public boolean isCorrect() {
         return this.ans.equals(this.selectedOption);
+    }
+    public String getSelectedOption() {
+        return selectedOption;
     }
 
     public String getqText() {
@@ -67,10 +68,6 @@ public class question {
 
     public void setAns(String ans) {
         this.ans = ans;
-    }
-
-    public String getSelectedOption() {
-        return selectedOption;
     }
 }
 

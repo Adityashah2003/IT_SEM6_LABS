@@ -2,6 +2,8 @@ package com.example.l4q1;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +16,10 @@ import java.util.List;
 public class quesAdapter extends RecyclerView.Adapter<quesAdapter.ViewHolder> {
 
     private final ArrayList<question> questions;
+    private final Context context;
 
-    public quesAdapter(ArrayList<question> questions) {
+    public quesAdapter(Context context,ArrayList<question> questions) {
+        this.context = context;
         this.questions = questions;
     }
 
