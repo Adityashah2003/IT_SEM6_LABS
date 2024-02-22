@@ -62,7 +62,7 @@ public class quesAdapter extends RecyclerView.Adapter<quesAdapter.ViewHolder> {
         RadioButton option2;
         RadioButton option3;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder extends (@NonNull View itemView) {
             super(itemView);
             questionText = itemView.findViewById(R.id.question_text);
             option1 = itemView.findViewById(R.id.option_1);
