@@ -1,5 +1,11 @@
 def transpose_matrix(matrix):
-    return [[row[i] for row in matrix] for i in range(len(matrix[0]))]
+    transposed_matrix = []
+    for i in range(len(matrix[0])):
+        transposed_row = []
+        for row in matrix:
+            transposed_row.append(row[i])
+        transposed_matrix.append(transposed_row)
+    return transposed_matrix
 
 rows = int(input("Enter the number of rows: "))
 cols = int(input("Enter the number of columns: "))
@@ -22,3 +28,16 @@ transpose = transpose_matrix(matrix)
 print("\nTranspose Matrix:")
 for row in transpose:
     print(row)
+
+
+# n = int(input())
+# matrix = []
+# for i in range(n):
+#     row = []
+#     for j in range(n):
+#         row.append(int(input()))
+#     matrix.append(row)
+    
+# for i in range(0,n):
+#     for j in range(0,n):
+#         print(matrix[i][j])
