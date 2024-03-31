@@ -1,0 +1,5 @@
+[
+    { "name": "Bandages", "quantity": 100 },
+    { "name": "Painkillers", "quantity": 50 },
+    { "name": "Antiseptic", "quantity": 30 }
+]
