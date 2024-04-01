@@ -1,14 +1,11 @@
 $(document).ready(function() {
-    $.ajax({
-        url: 'inventory.json',
-        dataType: 'json',
-        success: function(data) {
-            displayInventory(data);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error("Error fetching data: " + errorThrown);
-        }
-    });
+    var inventory = [
+        { "name": "Bandages", "quantity": 100 },
+        { "name": "Painkillers", "quantity": 50 },
+        { "name": "Antiseptic", "quantity": 30 }
+    ];
+
+    displayInventory(inventory);
 
     $("#addItemForm").submit(function(event) {
         event.preventDefault();

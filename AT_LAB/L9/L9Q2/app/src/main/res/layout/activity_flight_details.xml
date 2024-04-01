@@ -6,19 +6,28 @@
     tools:context=".FlightDetailsActivity">
 
     <TextView
-        android:id="@+id/flightDetailsTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_centerInParent="true" />
+        android:layout_marginTop="100dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/flightDetailsTextView1"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:id="@+id/flightDetailsTextView2"
+        android:layout_below="@+id/flightDetailsTextView1"
+        />
     <Button
         android:id="@+id/bookButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Book"
-        android:layout_below="@id/flightDetailsTextView"
+        android:layout_marginTop="25dp"
+        android:layout_below="@id/flightDetailsTextView2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
-
+        android:layout_centerVertical="true"
+        android:text="Book" />
 
 </RelativeLayout>

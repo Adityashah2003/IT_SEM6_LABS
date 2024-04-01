@@ -2,7 +2,6 @@ package com.example.l6q1;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
-
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -51,16 +50,12 @@ public class MainActivity extends AppCompatActivity {
                 intent.setData(uri);
                 startActivity(intent);
             } else {
-                // The app has permission, proceed to schedule the alarm
                 showTimePickerDialog();
             }
         } else {
-            // For versions below Android 12, proceed to schedule the alarm
             showTimePickerDialog();
         }
     }
-
-
 
     private void showTimePickerDialog() {
         Calendar calendar = Calendar.getInstance();
@@ -81,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 currentMinute,
                 true
         );
-
         timePickerDialog.show();
     }
 

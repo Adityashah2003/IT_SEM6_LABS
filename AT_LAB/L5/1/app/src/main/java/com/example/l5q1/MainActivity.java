@@ -40,14 +40,14 @@ public class MainActivity extends AppCompatActivity {
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 5000); // forward 5 seconds
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 5000); 
             }
         });
 
         rewind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 5000); // rewind 5 seconds
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 5000);
             }
         });
     }

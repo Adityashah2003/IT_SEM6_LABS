@@ -1,5 +1,6 @@
 package com.example.l9q2;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,12 +14,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class FlightDetailsActivity extends AppCompatActivity {
 
-    TextView flightDetailsTextView;
+    TextView flightDetailsTextView1;
+    TextView flightDetailsTextView2;
     Button bookButton;
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
     String selectedFlight;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,13 +30,13 @@ public class FlightDetailsActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
 
-        flightDetailsTextView = findViewById(R.id.flightDetailsTextView);
+        flightDetailsTextView1 = findViewById(R.id.flightDetailsTextView1);
+        flightDetailsTextView2 = findViewById(R.id.flightDetailsTextView2);
         bookButton = findViewById(R.id.bookButton);
 
         selectedFlight = getIntent().getStringExtra("flight");
 
-        // Display flight details
-        displayFlightDetails(selectedFlight);
+        displayBookedFlightDetails(selectedFlight);
 
         // Handle booking button click
         bookButton.setOnClickListener(new View.OnClickListener() {
@@ -44,8 +47,46 @@ public class FlightDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void displayFlightDetails(String selectedFlight) {
-        // Retrieve flight details from the database
+//    private void displayFlightDetails(String selectedFlight) {
+//        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_FLIGHTS +
+//                " WHERE " + DatabaseHelper.KEY_FLIGHT_NUMBER + "=?", new String[]{selectedFlight});
+//
+//        if (cursor.moveToFirst()) {
+//            String flightNumber = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_FLIGHT_NUMBER));
+//            String departure = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_DEPARTURE));
+//            String destination = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_DESTINATION));
+//            String departureTime = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_DEPARTURE_TIME));
+//            String availableTime = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_AVAILABLE_TIME));
+//            String availableDay = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_AVAILABLE_DAY));
+//            double price = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.KEY_PRICE));
+//
+//            flightDetailsTextView1.setText("Flight Number: " + flightNumber + "\n" +
+//                    "Departure: " + departure + "\n" +
+//                    "Destination: " + destination + "\n" +
+//                    "Departure Time: " + departureTime + "\n" +
+//                    "Available Time: " + availableTime + "\n" +
+//                    "Available Day: " + availableDay + "\n" +
+//                    "Price: $" + price);
+//        }
+//        cursor.close();
+//    }
+
+    private void bookFlight(String selectedFlight) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.KEY_FLIGHT_ID, getFlightId(selectedFlight));
+        values.put(DatabaseHelper.KEY_CUSTOMER_ID, 1); // Assume a customer with ID 1 is booking the flight
+
+        long newRowId = db.insert(DatabaseHelper.TABLE_RESERVATIONS, null, values);
+        if (newRowId != -1) {
+            Toast.makeText(this, "Flight booked successfully!", Toast.LENGTH_SHORT).show();
+            displayBookedFlightDetails(selectedFlight); // Display booked flight details
+        } else {
+            Toast.makeText(this, "Failed to book flight!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @SuppressLint({"SetTextI18n", "Range"})
+    private void displayBookedFlightDetails(String selectedFlight) {
         Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_FLIGHTS +
                 " WHERE " + DatabaseHelper.KEY_FLIGHT_NUMBER + "=?", new String[]{selectedFlight});
 
@@ -54,38 +95,18 @@ public class FlightDetailsActivity extends AppCompatActivity {
             String departure = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_DEPARTURE));
             String destination = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_DESTINATION));
             String departureTime = cursor.getString(cursor.getColumnIndex(DatabaseHelper.KEY_DEPARTURE_TIME));
-            double price = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.KEY_PRICE));
 
-            // Display flight details
-            flightDetailsTextView.setText("Flight Number: " + flightNumber + "\n" +
+            flightDetailsTextView2.setVisibility(View.VISIBLE); // Make the booked flight details visible
+            flightDetailsTextView2.setText("Booked Flight Details:\n" +
+                    "Flight Number: " + flightNumber + "\n" +
                     "Departure: " + departure + "\n" +
                     "Destination: " + destination + "\n" +
-                    "Departure Time: " + departureTime + "\n" +
-                    "Price: $" + price);
+                    "Departure Time: " + departureTime);
         }
         cursor.close();
     }
 
-    private void bookFlight(String selectedFlight) {
-        // Check if the flight is available (You may need to implement this logic based on your requirements)
-        // For simplicity, let's assume the flight is available
-
-        // You would typically insert a new reservation into the reservations table
-        // For this example, let's assume a customer with ID 1 is booking the flight
-
-        // Insert reservation into the reservations table
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.KEY_FLIGHT_ID, getFlightId(selectedFlight)); // Get flight ID from flight number
-        values.put(DatabaseHelper.KEY_CUSTOMER_ID, 1); // Assume a customer with ID 1 is booking the flight
-
-        long newRowId = db.insert(DatabaseHelper.TABLE_RESERVATIONS, null, values);
-        if (newRowId != -1) {
-            Toast.makeText(this, "Flight booked successfully!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Failed to book flight!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
+    @SuppressLint("Range")
     private int getFlightId(String flightNumber) {
         int flightId = -1;
         Cursor cursor = db.rawQuery("SELECT " + DatabaseHelper.KEY_ID + " FROM " +

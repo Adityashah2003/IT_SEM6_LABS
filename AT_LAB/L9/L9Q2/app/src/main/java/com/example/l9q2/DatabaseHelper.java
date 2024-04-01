@@ -2,6 +2,7 @@ package com.example.l9q2;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -24,6 +25,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_DEPARTURE = "departure";
     public static final String KEY_DESTINATION = "destination";
     public static final String KEY_DEPARTURE_TIME = "departure_time";
+    public static final String KEY_AVAILABLE_TIME = "available_time";
+    public static final String KEY_AVAILABLE_DAY = "available_day";
     public static final String KEY_PRICE = "price";
 
     // Customers table - column names
@@ -42,6 +45,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             KEY_DEPARTURE + " TEXT," +
             KEY_DESTINATION + " TEXT," +
             KEY_DEPARTURE_TIME + " TEXT," +
+            KEY_AVAILABLE_TIME + " TEXT," +
+            KEY_AVAILABLE_DAY + " TEXT," +
             KEY_PRICE + " REAL" +
             ")";
 
@@ -74,7 +79,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         insertDummyReservations(db);
     }
 
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older tables if existed
@@ -92,6 +96,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_DEPARTURE, "New York");
         values.put(KEY_DESTINATION, "Los Angeles");
         values.put(KEY_DEPARTURE_TIME, "2024-04-01 09:00:00");
+        values.put(KEY_AVAILABLE_TIME, "2024-04-01 09:00:00");
+        values.put(KEY_AVAILABLE_DAY, "Monday");
         values.put(KEY_PRICE, 200.00);
         long result = db.insert(TABLE_FLIGHTS, null, values);
         Log.d("DatabaseHelper", "Insert dummy flights result: " + result);
@@ -103,7 +109,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_EMAIL, "john.doe@example.com");
         values.put(KEY_PHONE, "1234567890");
         db.insert(TABLE_CUSTOMERS, null, values);
-
     }
 
     public void insertDummyReservations(SQLiteDatabase db) {
@@ -111,6 +116,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_FLIGHT_ID, 1); // Assuming flight with ID 1 is booked
         values.put(KEY_CUSTOMER_ID, 1); // Assuming customer with ID 1 is booking the flight
         db.insert(TABLE_RESERVATIONS, null, values);
-
     }
 }

@@ -28,17 +28,13 @@ public class MainActivity extends AppCompatActivity {
         nowPlayingTextView = findViewById(R.id.nowPlaying);
         mediaPlayer = new MediaPlayer();
 
-        // Create a list of songs
         songList = new ArrayList<>();
         songList.add(new Song("Song 1", "Artist 1", R.raw.song));
         songList.add(new Song("Song 2", "Artist 2", R.raw.song));
-        // Add more songs as needed
 
-        // Set up the adapter
         SongAdapter adapter = new SongAdapter(this, songList);
         songListView.setAdapter(adapter);
 
-        // Set a click listener for the song list
         songListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
