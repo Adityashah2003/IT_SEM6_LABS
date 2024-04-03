@@ -1,13 +1,15 @@
 import csv
 import random
-import math
 import numpy as np
+import math
 
 def read_data_from_csv(filename):
     with open(filename, 'r') as file:
         reader = csv.reader(file)
         data = list(reader)
-    return data
+    features = data[0]  # Extract feature names
+    data = data[1:]      # Remove feature names from data
+    return features, data
 
 def train_test_split(data, split_ratio):
     train_size = int(len(data) * split_ratio)
@@ -18,141 +20,166 @@ def train_test_split(data, split_ratio):
         train_data.append(test_data.pop(index))
     return train_data, test_data
 
-def entropy(dataset):
-    class_column = [row[-1] for row in dataset]
-    class_counts = {}
-    for label in class_column:
-        if label not in class_counts:
-            class_counts[label] = 0
-        class_counts[label] += 1
-    entropy_val = 0.0
-    for count in class_counts.values():
-        probability = count / len(dataset)
-        entropy_val -= probability * math.log2(probability)
+def entropy(y):
+    unique, counts = np.unique(y, return_counts=True)
+    probabilities = counts / len(y)
+    entropy_val = -np.sum(probabilities * np.log2(probabilities))
     return entropy_val
 
-def split_dataset(dataset, column, value):
-    left, right = [], []
-    for row in dataset:
-        if row[column] < value:
-            left.append(row)
-        else:
-            right.append(row)
-    return left, right
+def information_gain(X, y, feature_idx):
+    entropy_parent = entropy(y)
+    unique_values = np.unique(X[:, feature_idx])
+    weighted_entropy_children = 0
+    for value in unique_values:
+        indices = np.where(X[:, feature_idx] == value)[0]
+        child_entropy = entropy(y[indices])
+        weight = len(indices) / len(y)
+        weighted_entropy_children += weight * child_entropy
+    information_gain_val = entropy_parent - weighted_entropy_children
+    return information_gain_val
 
-def gini_index(target_col):
-    elements, counts = np.unique(target_col, return_counts=True)
-    gini_val = 1 - np.sum([(counts[i] / np.sum(counts)) ** 2 for i in range(len(elements))])
+def id3(X, y):
+    if len(np.unique(y)) == 1:
+        return {'label': y[0]}
+    if X.shape[1] == 0:
+        return {'label': np.bincount(y).argmax()}
+    best_feature = np.argmax([information_gain(X, y, i) for i in range(X.shape[1])])
+    tree = {'feature': best_feature}
+    for value in np.unique(X[:, best_feature]):
+        indices = np.where(X[:, best_feature] == value)[0]
+        X_subset, y_subset = X[indices], y[indices]
+        subtree = id3(X_subset, y_subset)
+        tree[value] = subtree
+    return tree
+
+def split_info(X, y, feature_idx):
+    unique_values = np.unique(X[:, feature_idx])
+    split_info_val = 0
+    for value in unique_values:
+        indices = np.where(X[:, feature_idx] == value)[0]
+        proportion = len(indices) / len(y)
+        split_info_val -= proportion * math.log2(proportion)
+    return split_info_val
+
+def gain_ratio(X, y, feature_idx):
+    info_gain = information_gain(X, y, feature_idx)
+    split_info_val = split_info(X, y, feature_idx)
+    if split_info_val == 0:  # Avoid division by zero
+        return 0
+    gain_ratio_val = info_gain / split_info_val
+    return gain_ratio_val
+
+def c45(X, y):
+    if len(np.unique(y)) == 1:
+        return {'label': y[0]}
+    if X.shape[1] == 0 or np.all(X == X[0, :]):
+        return {'label': np.bincount(y).argmax()}
+    
+    best_feature = np.argmax([gain_ratio(X, y, i) for i in range(X.shape[1])])
+    tree = {'feature': best_feature}
+    
+    unique_values = np.unique(X[:, best_feature])
+    for value in unique_values:
+        indices = np.where(X[:, best_feature] == value)[0]
+        X_subset, y_subset = X[indices], y[indices]
+        
+        subtree = None
+        if len(X_subset) == 0:
+            # Handle missing feature value by assigning majority label
+            subtree = {'label': np.bincount(y).argmax()}
+        else:
+            subtree = c45(X_subset, y_subset)
+        
+        tree[value] = subtree
+    
+    # Check if all possible feature values are covered
+    for value in np.unique(X[:, best_feature]):
+        if value not in tree:
+            # Add missing feature value with majority label
+            tree[value] = {'label': np.bincount(y).argmax()}
+    
+    return tree
+
+def gini_index(y):
+    unique, counts = np.unique(y, return_counts=True)
+    probabilities = counts / len(y)
+    gini_val = 1 - np.sum(probabilities ** 2)
     return gini_val
 
-def gini_gain(data, split_attribute_name, target_name):
-    total_gini = gini_index(data[target_name])
-    vals, counts= np.unique(data[split_attribute_name], return_counts=True)
-    weighted_gini = np.sum([(counts[i] / np.sum(counts)) * gini_index(data.where(data[split_attribute_name]==vals[i]).dropna()[target_name]) for i in range(len(vals))])
-    gini_gain_val = total_gini - weighted_gini
+def gini_gain(X, y, feature_idx):
+    total_gini = gini_index(y)
+    unique_values = np.unique(X[:, feature_idx])
+    weighted_gini_children = 0
+    for value in unique_values:
+        indices = np.where(X[:, feature_idx] == value)[0]
+        child_gini = gini_index(y[indices])
+        weight = len(indices) / len(y)
+        weighted_gini_children += weight * child_gini
+    gini_gain_val = total_gini - weighted_gini_children
     return gini_gain_val
 
-def get_split(dataset):
-    class_values = list(set(row[-1] for row in dataset))
-    best_index, best_value, best_score, best_groups = 999, 999, 999, None
-    for index in range(len(dataset[0]) - 1):
-        for row in dataset:
-            groups = split_dataset(dataset, index, row[index])
-            gini = gini_index(groups)
-            if gini < best_score:
-                best_index, best_value, best_score, best_groups = index, row[index], gini, groups
-    return {'index': best_index, 'value': best_value, 'groups': best_groups}
+def cart(X, y):
+    if len(np.unique(y)) == 1:
+        return {'label': y[0]}
+    if X.shape[1] == 0:
+        return {'label': np.bincount(y).argmax()}
+    best_feature = np.argmax([gini_gain(X, y, i) for i in range(X.shape[1])])
+    tree = {'feature': best_feature}
+    for value in np.unique(X[:, best_feature]):
+        indices = np.where(X[:, best_feature] == value)[0]
+        X_subset, y_subset = X[indices], y[indices]
+        subtree = cart(X_subset, y_subset)
+        tree[value] = subtree
+    return tree
 
-def to_terminal(group):
-    outcomes = [row[-1] for row in group]
-    return max(set(outcomes), key=outcomes.count)
-
-def split(node, max_depth, min_size, depth):
-    left, right = node['groups']
-    del(node['groups'])
-    # check for a no split
-    if not left or not right:
-        node['left'] = node['right'] = to_terminal(left + right)
-        return
-    # check for max depth
-    if depth >= max_depth:
-        node['left'], node['right'] = to_terminal(left), to_terminal(right)
-        return
-    # process left child
-    if len(left) <= min_size:
-        node['left'] = to_terminal(left)
-    else:
-        node['left'] = get_split(left)
-        split(node['left'], max_depth, min_size, depth+1)
-    # process right child
-    if len(right) <= min_size:
-        node['right'] = to_terminal(right)
-    else:
-        node['right'] = get_split(right)
-        split(node['right'], max_depth, min_size, depth+1)
-
-def build_tree(train, max_depth, min_size):
-    root = get_split(train)
-    split(root, max_depth, min_size, 1)
-    return root
-
-def predict(node, row):
-    if row[node['index']] < node['value']:
-        if isinstance(node['left'], dict):
-            return predict(node['left'], row)
+def predict(tree, sample):
+    if 'feature' in tree:
+        value = sample[tree['feature']]
+        if value in tree:
+            return predict(tree[value], sample)
         else:
-            return node['left']
+            print("No key for value:", value)
+            print("Tree:", tree)
     else:
-        if isinstance(node['right'], dict):
-            return predict(node['right'], row)
-        else:
-            return node['right']
+        print("No 'feature' key in tree")
+        print("Tree:", tree)
+    return tree['label']
 
-def decision_tree(train, test, max_depth, min_size):
-    tree = build_tree(train, max_depth, min_size)
-    predictions = []
-    for row in test:
-        prediction = predict(tree, row)
-        predictions.append(prediction)
-    return predictions
 
 def accuracy_metric(actual, predicted):
-    correct = 0
-    for i in range(len(actual)):
-        if actual[i] == predicted[i]:
-            correct += 1
+    correct = sum(1 for i in range(len(actual)) if actual[i] == predicted[i])
     return correct / float(len(actual)) * 100.0
 
-def evaluate_algorithm(dataset, algorithm, *args):
-    train, test = train_test_split(dataset, 0.8)
-    predicted = algorithm(train, test, *args)
-    actual = [row[-1] for row in test]
-    accuracy = accuracy_metric(actual, predicted)
+def evaluate_algorithm(dataset, algorithm):
+    train_set, test_set = train_test_split(dataset, 0.8)
+    X_train = np.array([row[:-1] for row in train_set])
+    y_train = np.array([row[-1] for row in train_set])
+    X_test = np.array([row[:-1] for row in test_set])
+    y_test = np.array([row[-1] for row in test_set])
+    tree = algorithm(X_train, y_train)
+    predictions = [predict(tree, sample) for sample in X_test]
+    accuracy = accuracy_metric(y_test, predictions)
     return accuracy
 
-filename = 'data.csv'
-dataset = read_data_from_csv(filename)
+filename = 'L5-L9/data.csv'
+features, dataset = read_data_from_csv(filename)  # Extract features and data
 
-# Define hyperparameters for ID3 algorithm
-id3_max_depth = 3
-id3_min_size = 1
+print("Features:", features)
+print("Data:", dataset)
 
-# Evaluate ID3 algorithm
-id3_accuracy = evaluate_algorithm(dataset, decision_tree, id3_max_depth, id3_min_size)
+# Convert feature names to numerical indices
+feature_indices = {feature: i for i, feature in enumerate(features)}
+
+print("Feature Indices:", feature_indices)
+
+# ID3
+id3_accuracy = evaluate_algorithm(dataset, id3)
 print('ID3 Accuracy:', id3_accuracy)
 
-# Define hyperparameters for C4.5 algorithm
-c45_max_depth = 5
-c45_min_size = 2
-
-# Evaluate C4.5 algorithm
-c45_accuracy = evaluate_algorithm(dataset, decision_tree, c45_max_depth, c45_min_size)
+# C4.5
+c45_accuracy = evaluate_algorithm(dataset, c45)
 print('C4.5 Accuracy:', c45_accuracy)
 
-# Define hyperparameters for CART algorithm
-cart_max_depth = 4
-cart_min_size = 3
-
-# Evaluate CART algorithm
-cart_accuracy = evaluate_algorithm(dataset, decision_tree, cart_max_depth, cart_min_size)
+# CART
+cart_accuracy = evaluate_algorithm(dataset, cart)
 print('CART Accuracy:', cart_accuracy)

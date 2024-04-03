@@ -7,55 +7,55 @@ with open("transactions.txt", "r") as file:
 
 df = pd.DataFrame(data)
 
-Candidate_set = []
-Frequent_set = []
+candidate_set = []
+frequent_set = []
 items = pd.unique(df.values.ravel('K'))
 items = items[~pd.isnull(items)]
 min_support = int(input("Enter Min Support: "))
 
 for iterno in range(1, len(items)):
-    Count = {}
+    count = {}
     intermediate = []
 
     if iterno == 1:
-        Candidate_set.append(items)
-        for txn in Candidate_set[iterno - 1]:
+        candidate_set.append(items)
+        for txn in candidate_set[iterno - 1]:
             ctr = 0
             for val in df.values:
                 if txn in val:
                     ctr += 1
-            Count[txn] = ctr
-        print(f"Candidate Set C[{iterno}]: {Candidate_set[iterno - 1]}")
+            count[txn] = ctr
+        print(f"Candidate Set C[{iterno}]: {candidate_set[iterno - 1]}")
     else:
-        Candidate_set.append(list(combinations(np.unique(np.array(Frequent_set[iterno - 2]).ravel('K')), iterno)))
-        print(f"Candidate Set C[{iterno}]: {Candidate_set[iterno - 1]}")
-        for txn in Candidate_set[iterno - 1]:
+        candidate_set.append(list(combinations(np.unique(np.array(frequent_set[iterno - 2]).ravel('K')), iterno)))
+        print(f"Candidate Set C[{iterno}]: {candidate_set[iterno - 1]}")
+        for txn in candidate_set[iterno - 1]:
             ctr = 0
             for val in df.values:
                 if all(i in val for i in txn):
                     ctr += 1
-            Count[txn] = ctr
+            count[txn] = ctr
 
-    for k in Count.keys():
-        if Count[k] >= min_support:
+    for k in count.keys():
+        if count[k] >= min_support:
             intermediate.append(k)
 
     if intermediate == []:
-        print(f"Frequent Set L[{iterno}]: {Frequent_set}")
+        print(f"Frequent Set L[{iterno}]: {frequent_set}")
         break
 
-    Frequent_set.append(intermediate)
-    print(f"Frequent Set L[{iterno}]: {Frequent_set[iterno-1]}")
+    frequent_set.append(intermediate)
+    print(f"Frequent Set L[{iterno}]: {frequent_set[iterno-1]}")
 
-if len(Frequent_set) > 0:
-    Frequent_set = Frequent_set[1:]
+if len(frequent_set) > 0:
+    frequent_set = frequent_set[1:]
 
-def generate_association_rules(Frequent_set, min_confidence):
-    Rules = []
-    for k in range(1, len(Frequent_set)):
-        for itemset in Frequent_set[k]:
+def generate_association_rules(frequent_set, min_confidence):
+    rules = []
+    for k in range(1, len(frequent_set)):
+        for itemset in frequent_set[k]:
             m = len(itemset)
-            for i in range(1, m + 1):  # Change here
+            for i in range(1, m + 1): 
                 lefts = list(combinations(itemset, i))
                 for left in lefts:
                     left = set(left)
@@ -70,12 +70,11 @@ def generate_association_rules(Frequent_set, min_confidence):
                     epsilon = 1e-9
                     confidence = bothcount / (leftcount + epsilon)
                     if confidence >= min_confidence:
-                        Rules.append((str(left), str(right), confidence))
-    return Rules
-
+                        rules.append((str(left), str(right), confidence))
+    return rules
 
 min_confidence = 0.6
-rules = generate_association_rules(Frequent_set, min_confidence)
+rules = generate_association_rules(frequent_set, min_confidence)
 
 for rule in rules:
     print(f"Rule: {rule[0]} => {rule[1]}, Confidence: {rule[2]}")

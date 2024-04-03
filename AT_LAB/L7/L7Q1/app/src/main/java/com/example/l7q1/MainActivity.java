@@ -43,20 +43,18 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cursor res = myDb.getAllData();
                 if(res.getCount() == 0) {
-                    // show message
                     return;
                 }
-
                 StringBuffer buffer = new StringBuffer();
                 while (res.moveToNext()) {
                     buffer.append("Roll Number :"+ res.getString(0)+"\n");
                     buffer.append("Name :"+ res.getString(1)+"\n");
                     buffer.append("Marks :"+ res.getString(2)+"\n\n");
                 }
-
                 showMessage("Data",buffer.toString());
             }
         });
+
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     public void showMessage(String title,String Message){
