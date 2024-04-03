@@ -77,6 +77,5 @@ def generate_association_rules(Frequent_set, min_confidence):
 min_confidence = 0.6
 rules = generate_association_rules(Frequent_set, min_confidence)
 
-# Print the generated rules
 for rule in rules:
     print(f"Rule: {rule[0]} => {rule[1]}, Confidence: {rule[2]}")
