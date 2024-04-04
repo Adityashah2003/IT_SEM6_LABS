@@ -1,85 +1,59 @@
-import csv
-import math
-from collections import defaultdict
+import pandas as pd
 
-def load_dataset(filename):
-    dataset = []
-    with open(filename, 'r') as file:
-        csv_reader = csv.reader(file)
-        next(csv_reader)
-        for row in csv_reader:
-            dataset.append([float(x) for x in row])
-    return dataset
+def auto_map_attributes(data):
+    attribute_maps = {}
+    for column in data.columns:
+        unique_values = data[column].unique()
+        attribute_maps[column] = {value: index for index, value in enumerate(unique_values)}
+    return attribute_maps
 
-def split_dataset(dataset, split_ratio):
-    split_point = int(len(dataset) * split_ratio)
-    return dataset[:split_point], dataset[split_point:]
+def convert_csv(csv_file):
+    # Read the CSV file
+    data = pd.read_csv(csv_file)
 
+    # Generate attribute mappings
+    attribute_maps = auto_map_attributes(data)
 
-def calculate_statistics(dataset):
-    separated = defaultdict(list)
-    for row in dataset:
-        separated[row[-1]].append(row)
-    statistics = {}
-    for class_value, instances in separated.items():
-        statistics[class_value] = {
-            'prior': len(instances) / float(len(dataset)),
-            'mean': [sum(attribute) / float(len(attribute)) for attribute in zip(*instances)],
-        }
-    for class_value, instances in separated.items():
-        statistics[class_value]['stdev'] = [
-            math.sqrt(sum((x - mean)**2 for x in attribute) / (len(attribute) - 1))
-            for attribute, mean in zip(zip(*instances), statistics[class_value]['mean'])
-        ]
-    return statistics
+    # Apply mappings to respective columns
+    for column, attribute_map in attribute_maps.items():
+        data[column] = data[column].map(attribute_map)
 
+    mp = dict()
+    for i in range(len(data)):
+        row = data.iloc[i]
+        y = row[-1]
+        if (y not in mp):
+            mp[y] = list()
+        mp[y].append(row)
+    
+    # Testing data
+    test = [2, 1, 0, 1]
 
-def calculate_probability(x, mean, stdev):
-    epsilon = 1e-6 
-    exponent = math.exp(-(math.pow(x - mean, 2) / (2 * math.pow(stdev + epsilon, 2))))
-    return (1 / (math.sqrt(2 * math.pi) * (stdev + epsilon))) * exponent
+    probYes = 1
+    countYes = sum(data.iloc[:,-1] == 1)
+    totalYes = len(data[data.iloc[:,-1] == 1])
+    probYes *= countYes / totalYes
+    for i in range(len(test)):
+        count = sum(row[i] == test[i] for row in mp[1])
+        total = len(mp[1])
+        probYes *= count / total
 
+    probNo = 1
+    countNo = sum(data.iloc[:,-1] == 0)
+    totalNo = len(data[data.iloc[:,-1] == 0])
+    probNo *= countNo / totalNo
+    for i in range(len(test)):
+        count = sum(row[i] == test[i] for row in mp[0])
+        total = len(mp[0])
+        probNo *= count / total
 
-def calculate_class_probabilities(statistics, input_vector):
-    probabilities = {}
-    for class_value, class_stats in statistics.items():
-        probabilities[class_value] = class_stats['prior']
-        for i in range(len(class_stats['mean'])):
-            mean, stdev = class_stats['mean'][i], class_stats['stdev'][i]
-            x = input_vector[i]
-            probabilities[class_value] *= calculate_probability(x, mean, stdev)
-    return probabilities
+    prob = probYes / (probYes + probNo)
 
-def predict(statistics, input_vector):
-    probabilities = calculate_class_probabilities(statistics, input_vector)
-    best_label, best_prob = None, -1
-    for class_value, probability in probabilities.items():
-        if best_label is None or probability > best_prob:
-            best_prob = probability
-            best_label = class_value
-    return best_label
+    print("Probability of playing golf:", prob * 100, "%")
 
+    return data
 
-def get_predictions(statistics, test_set):
-    predictions = []
-    for row in test_set:
-        prediction = predict(statistics, row)
-        predictions.append(prediction)
-    return predictions
+csv_file = 'L5-L9/data.csv'
+dataset = convert_csv(csv_file)
 
-def get_accuracy(test_set, predictions):
-    correct = 0
-    for i in range(len(test_set)):
-        if test_set[i][-1] == predictions[i]:
-            correct += 1
-    return (correct / float(len(test_set))) * 100.0
-
-if __name__ == "__main__":
-    filename = 'diabetes.csv'
-    dataset = load_dataset(filename)
-    split_ratio = 0.7
-    training_set, testing_set = split_dataset(dataset, split_ratio)
-    statistics = calculate_statistics(training_set)
-    predictions = get_predictions(statistics, testing_set)
-    accuracy = get_accuracy(testing_set, predictions)
-    print('Accuracy:', accuracy)
+# print(dataset)

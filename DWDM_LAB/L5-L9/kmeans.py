@@ -1,69 +1,55 @@
 import numpy as np
-import math
-import pandas as pd
-from operator import itemgetter
 
-data = {
-    "Day": ["D1", "D2", "D3", "D4", "DS", "D6", "D7", "D8", "D9", "D10", "D11", "D12", "D13", "D14"],
-    "Outlook": ["Sunny", "Sunny", "Overcast", "Rain", "Rain", "Rain", "Overcast", "Sunny", "Sunny", "Rain", "Sunny", "Overcast", "Overcast", "Rain"],
-    "Temperature": ["Hot", "Hot", "Hot", "Mild", "Cool", "Cool", "Cool", "Mild", "Cool", "Mild", "Mild", "Mild", "Hot", "Mild"],
-    "Humidity": ["High", "High", "High", "High", "Normal", "Normal", "Normal", "High", "Normal", "Normal", "Normal", "High", "Normal", "High"],
-    "Wind": ["Weak", "Strong", "Weak", "Weak", "Weak", "Strong", "Strong", "Weak", "Weak", "Weak", "Strong", "Strong", "Weak", "Strong"],
-    "Play ball": ["No", "No", "Yes", "Yes", "Yes", "No", "Yes", "No", "Yes", "Yes", "Yes", "Yes", "Yes", "No"]
-}
+class KMeans:
+    def __init__(self, n_clusters=2, max_iters=100, tol=1e-4):
+        self.n_clusters = n_clusters
+        self.max_iters = max_iters
+        self.tol = tol
+        self.centroids = None
 
-df = pd.DataFrame(data)
+    def fit(self, X):
+        idx = np.random.choice(X.shape[0], self.n_clusters, replace=False)
+        self.centroids = X[idx]
 
-print(df)
+        for _ in range(self.max_iters):
+            labels = self._assign_labels(X)
 
-class DecisionTree:
-    def __init__(self, df, target, positive, parent_option, parent):
-        self.total_data = df
-        self.target = target
-        self.pos = positive
-        self.parent_val = parent_option
-        self.parent = parent
-        self.childs = []
-        self.decision = ''
-def calc_entropy(self,total_data):
-        p=sum(total_data[self.target]==self.pos)
-        n=total_data.shape[0]-p
-        pr=p/(p+n) 
-        nr=1-pr
-        pval=-pr*math.log2(pr)
-        nval=-nr*math.log2(nr)
-        return pval+nval
+            new_centroids = self._calculate_centroids(X, labels)
 
-def calc_gain(self,f,total_data):
-        average=0
-        gain=calc_entropy(total_data)
-        for v in np.unique(total_data[f]):
-            subset=total_data[total_data[f]==v]
-            subset_entropy=calc_entropy(subset)
-            gain=gain-(len(subset)/len(total_data))*subset_entropy
-            print("\n",gain)
-            return gain
-def best_split(self):
-        self.split = max(self.gains, key = itemgetter(1))[0]
-def change_nodes(self,total_data,f):
-     # maxg=0
-     #maxf=""
-      '''for feature in f:
-            gain=calc_gain(self,feature,total_data)
-            if gain>maxg:
-                  maxg=gain
-                  maxf=feature'''
-      self.features = [c for c in self.data.columns if c != self.target]
-      self.entropy = self.calc_entropy(total_data)
-      if self.entropy != 0:
-            self.gains = [(feat, self.calc_gain(feat,total_data)) for feat in self.features]
-            #pass gains to best_split function to gett the max gain attribute
-            self.best_split()
-            inverse = [k for k in self.data.columns if k != self.splitter]
-            unique_options=self.total_data[self.split].unique()
-            for choice in unique_options:
-                  temp=self.total_data[self[total_data[self.split==val]]][inverse]
-                  print(temp)
-        
+            if np.all(np.abs(self.centroids - new_centroids) < self.tol):
+                break
 
+            self.centroids = new_centroids
 
+    def _assign_labels(self, X):
+        distances = np.sqrt(((X - self.centroids[:, np.newaxis])**2).sum(axis=2))
+        return np.argmin(distances, axis=0)
+
+    def _calculate_centroids(self, X, labels):
+        centroids = np.zeros((self.n_clusters, X.shape[1]))
+        for i in range(self.n_clusters):
+            centroids[i] = np.mean(X[labels == i], axis=0)
+        return centroids
+
+    def predict(self, X):
+        distances = np.sqrt(((X - self.centroids[:, np.newaxis])**2).sum(axis=2))
+        return np.argmin(distances, axis=0)
+
+# Example usage:
+if __name__ == "__main__":
+    with open("L5-L9/kmeans_data.txt", "r") as file:
+        data = []
+        for line in file:
+            point = line.strip().split(',')
+            data.append([float(point[0]), float(point[1])])
+    X = np.array(data)
+
+    kmeans = KMeans(n_clusters=3)
+    kmeans.fit(X)
+
+    labels = kmeans.predict(X)
+
+    print("Cluster centroids:")
+    print(kmeans.centroids)
+    print("\nCluster labels:")
+    print(labels)

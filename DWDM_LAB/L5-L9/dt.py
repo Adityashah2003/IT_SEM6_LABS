@@ -61,76 +61,76 @@ def split_info(X, y, feature_idx):
         split_info_val -= proportion * math.log2(proportion)
     return split_info_val
 
-def gain_ratio(X, y, feature_idx):
-    info_gain = information_gain(X, y, feature_idx)
-    split_info_val = split_info(X, y, feature_idx)
-    if split_info_val == 0:  # Avoid division by zero
-        return 0
-    gain_ratio_val = info_gain / split_info_val
-    return gain_ratio_val
+# def gain_ratio(X, y, feature_idx):
+#     info_gain = information_gain(X, y, feature_idx)
+#     split_info_val = split_info(X, y, feature_idx)
+#     if split_info_val == 0:  # Avoid division by zero
+#         return 0
+#     gain_ratio_val = info_gain / split_info_val
+#     return gain_ratio_val
 
-def c45(X, y):
-    if len(np.unique(y)) == 1:
-        return {'label': y[0]}
-    if X.shape[1] == 0 or np.all(X == X[0, :]):
-        return {'label': np.bincount(y).argmax()}
+# def c45(X, y):
+#     if len(np.unique(y)) == 1:
+#         return {'label': y[0]}
+#     if X.shape[1] == 0 or np.all(X == X[0, :]):
+#         return {'label': np.bincount(y).argmax()}
     
-    best_feature = np.argmax([gain_ratio(X, y, i) for i in range(X.shape[1])])
-    tree = {'feature': best_feature}
+#     best_feature = np.argmax([gain_ratio(X, y, i) for i in range(X.shape[1])])
+#     tree = {'feature': best_feature}
     
-    unique_values = np.unique(X[:, best_feature])
-    for value in unique_values:
-        indices = np.where(X[:, best_feature] == value)[0]
-        X_subset, y_subset = X[indices], y[indices]
+#     unique_values = np.unique(X[:, best_feature])
+#     for value in unique_values:
+#         indices = np.where(X[:, best_feature] == value)[0]
+#         X_subset, y_subset = X[indices], y[indices]
         
-        subtree = None
-        if len(X_subset) == 0:
-            # Handle missing feature value by assigning majority label
-            subtree = {'label': np.bincount(y).argmax()}
-        else:
-            subtree = c45(X_subset, y_subset)
+#         subtree = None
+#         if len(X_subset) == 0:
+#             # Handle missing feature value by assigning majority label
+#             subtree = {'label': np.bincount(y).argmax()}
+#         else:
+#             subtree = c45(X_subset, y_subset)
         
-        tree[value] = subtree
+#         tree[value] = subtree
     
-    # Check if all possible feature values are covered
-    for value in np.unique(X[:, best_feature]):
-        if value not in tree:
-            # Add missing feature value with majority label
-            tree[value] = {'label': np.bincount(y).argmax()}
+#     # Check if all possible feature values are covered
+#     for value in np.unique(X[:, best_feature]):
+#         if value not in tree:
+#             # Add missing feature value with majority label
+#             tree[value] = {'label': np.bincount(y).argmax()}
     
-    return tree
+#     return tree
 
-def gini_index(y):
-    unique, counts = np.unique(y, return_counts=True)
-    probabilities = counts / len(y)
-    gini_val = 1 - np.sum(probabilities ** 2)
-    return gini_val
+# def gini_index(y):
+#     unique, counts = np.unique(y, return_counts=True)
+#     probabilities = counts / len(y)
+#     gini_val = 1 - np.sum(probabilities ** 2)
+#     return gini_val
 
-def gini_gain(X, y, feature_idx):
-    total_gini = gini_index(y)
-    unique_values = np.unique(X[:, feature_idx])
-    weighted_gini_children = 0
-    for value in unique_values:
-        indices = np.where(X[:, feature_idx] == value)[0]
-        child_gini = gini_index(y[indices])
-        weight = len(indices) / len(y)
-        weighted_gini_children += weight * child_gini
-    gini_gain_val = total_gini - weighted_gini_children
-    return gini_gain_val
+# def gini_gain(X, y, feature_idx):
+#     total_gini = gini_index(y)
+#     unique_values = np.unique(X[:, feature_idx])
+#     weighted_gini_children = 0
+#     for value in unique_values:
+#         indices = np.where(X[:, feature_idx] == value)[0]
+#         child_gini = gini_index(y[indices])
+#         weight = len(indices) / len(y)
+#         weighted_gini_children += weight * child_gini
+#     gini_gain_val = total_gini - weighted_gini_children
+#     return gini_gain_val
 
-def cart(X, y):
-    if len(np.unique(y)) == 1:
-        return {'label': y[0]}
-    if X.shape[1] == 0:
-        return {'label': np.bincount(y).argmax()}
-    best_feature = np.argmax([gini_gain(X, y, i) for i in range(X.shape[1])])
-    tree = {'feature': best_feature}
-    for value in np.unique(X[:, best_feature]):
-        indices = np.where(X[:, best_feature] == value)[0]
-        X_subset, y_subset = X[indices], y[indices]
-        subtree = cart(X_subset, y_subset)
-        tree[value] = subtree
-    return tree
+# def cart(X, y):
+#     if len(np.unique(y)) == 1:
+#         return {'label': y[0]}
+#     if X.shape[1] == 0:
+#         return {'label': np.bincount(y).argmax()}
+#     best_feature = np.argmax([gini_gain(X, y, i) for i in range(X.shape[1])])
+#     tree = {'feature': best_feature}
+#     for value in np.unique(X[:, best_feature]):
+#         indices = np.where(X[:, best_feature] == value)[0]
+#         X_subset, y_subset = X[indices], y[indices]
+#         subtree = cart(X_subset, y_subset)
+#         tree[value] = subtree
+#     return tree
 
 def predict(tree, sample):
     if 'feature' in tree:
@@ -138,10 +138,10 @@ def predict(tree, sample):
         if value in tree:
             return predict(tree[value], sample)
         else:
-            print("No key for value:", value)
+            # print("No key for value:", value)
             print("Tree:", tree)
     else:
-        print("No 'feature' key in tree")
+        # print("No 'feature' key in tree")
         print("Tree:", tree)
     return tree['label']
 
@@ -164,22 +164,22 @@ def evaluate_algorithm(dataset, algorithm):
 filename = 'L5-L9/data.csv'
 features, dataset = read_data_from_csv(filename)  # Extract features and data
 
-print("Features:", features)
-print("Data:", dataset)
+# print("Features:", features)
+# print("Data:", dataset)
 
 # Convert feature names to numerical indices
 feature_indices = {feature: i for i, feature in enumerate(features)}
 
-print("Feature Indices:", feature_indices)
+# print("Feature Indices:", feature_indices)
 
 # ID3
 id3_accuracy = evaluate_algorithm(dataset, id3)
 print('ID3 Accuracy:', id3_accuracy)
 
-# C4.5
-c45_accuracy = evaluate_algorithm(dataset, c45)
-print('C4.5 Accuracy:', c45_accuracy)
+# # C4.5
+# c45_accuracy = evaluate_algorithm(dataset, c45)
+# print('C4.5 Accuracy:', c45_accuracy)
 
-# CART
-cart_accuracy = evaluate_algorithm(dataset, cart)
-print('CART Accuracy:', cart_accuracy)
+# # CART
+# cart_accuracy = evaluate_algorithm(dataset, cart)
+# print('CART Accuracy:', cart_accuracy)

@@ -1,80 +1,75 @@
 import pandas as pd
 import numpy as np
 from itertools import combinations
+from collections import defaultdict
 
-with open("transactions.txt", "r") as file:
-    data = [line.strip().split() for line in file.readlines()]
+data = defaultdict(list)
 
-df = pd.DataFrame(data)
+with open('L5-L9/transactions.txt', 'r') as file:
+    for line in file:
+        items = line.strip().split()
+        transaction_id = 'T' + str(len(data) + 1)  
+        data[transaction_id] = items
 
-candidate_set = []
-frequent_set = []
-items = pd.unique(df.values.ravel('K'))
-items = items[~pd.isnull(items)]
-min_support = int(input("Enter Min Support: "))
+is_integers = all(isinstance(item, int) for transaction in data.values() for item in transaction)
+if is_integers:
+    print("Transactions contain integers.")
+else:
+    print("Transactions contain characters.")
 
-for iterno in range(1, len(items)):
-    count = {}
-    intermediate = []
+unique_items = set()
+for transaction in data.values():
+    unique_items.update(transaction)
 
-    if iterno == 1:
-        candidate_set.append(items)
-        for txn in candidate_set[iterno - 1]:
-            ctr = 0
-            for val in df.values:
-                if txn in val:
-                    ctr += 1
-            count[txn] = ctr
-        print(f"Candidate Set C[{iterno}]: {candidate_set[iterno - 1]}")
-    else:
-        candidate_set.append(list(combinations(np.unique(np.array(frequent_set[iterno - 2]).ravel('K')), iterno)))
-        print(f"Candidate Set C[{iterno}]: {candidate_set[iterno - 1]}")
-        for txn in candidate_set[iterno - 1]:
-            ctr = 0
-            for val in df.values:
-                if all(i in val for i in txn):
-                    ctr += 1
-            count[txn] = ctr
+init = sorted(unique_items)
+print("Unique Items:", init)
 
-    for k in count.keys():
-        if count[k] >= min_support:
-            intermediate.append(k)
+min_support_count = 2
 
-    if intermediate == []:
-        print(f"Frequent Set L[{iterno}]: {frequent_set}")
+# Calculate support count for each item
+item_counts = {}
+for item in init:
+    count = sum(item in transaction for transaction in data.values())
+    item_counts[item] = count
+
+print("C1:")
+for item, count in item_counts.items():
+    print(f"[{item}]: {count}")
+
+# Find frequent 1-itemsets (L1)
+frequent_1_itemsets = {frozenset([item]): count for item, count in item_counts.items() if count >= min_support_count}
+
+print("\nL1:")
+for itemset, count in frequent_1_itemsets.items():
+    print(f"{list(itemset)}: {count}")
+
+# Generate frequent itemsets and association rules
+frequent_itemsets = frequent_1_itemsets
+for size in range(2, len(init) + 1):
+    candidate_itemsets = [set(itemset) for itemset in combinations(init, size)]
+    frequent_itemsets_next = {}
+    for candidate in candidate_itemsets:
+        support_count = sum(all(item in transaction for item in candidate) for transaction in data.values())
+        if support_count >= min_support_count:
+            frequent_itemsets_next[frozenset(candidate)] = support_count
+    if not frequent_itemsets_next:
         break
+    frequent_itemsets.update(frequent_itemsets_next)
 
-    frequent_set.append(intermediate)
-    print(f"Frequent Set L[{iterno}]: {frequent_set[iterno-1]}")
+print("\nFrequent Itemsets:")
+for itemset, count in frequent_itemsets.items():
+    print(f"{list(itemset)}: {count}")
 
-if len(frequent_set) > 0:
-    frequent_set = frequent_set[1:]
-
-def generate_association_rules(frequent_set, min_confidence):
-    rules = []
-    for k in range(1, len(frequent_set)):
-        for itemset in frequent_set[k]:
-            m = len(itemset)
-            for i in range(1, m + 1): 
-                lefts = list(combinations(itemset, i))
-                for left in lefts:
-                    left = set(left)
-                    right = set(itemset) - left
-                    leftcount = 0
-                    bothcount = 0
-                    for val in df.values:
-                        if left.issubset(set(val)):
-                            leftcount += 1
-                        if set(itemset).issubset(set(val)):
-                            bothcount += 1
-                    epsilon = 1e-9
-                    confidence = bothcount / (leftcount + epsilon)
-                    if confidence >= min_confidence:
-                        rules.append((str(left), str(right), confidence))
-    return rules
-
-min_confidence = 0.6
-rules = generate_association_rules(frequent_set, min_confidence)
-
-for rule in rules:
-    print(f"Rule: {rule[0]} => {rule[1]}, Confidence: {rule[2]}")
+# Generate association rules
+print("\nAssociation Rules:")
+for itemset in frequent_itemsets:
+    if len(itemset) > 1:
+        for size in range(1, len(itemset)):
+            for subset in combinations(itemset, size):
+                antecedent = frozenset(subset)
+                consequent = itemset - antecedent
+                antecedent_count = frequent_itemsets.get(antecedent, 0)
+                if antecedent_count != 0:
+                    confidence = frequent_itemsets[itemset] / antecedent_count
+                    if confidence >= 0.5:  # Set your confidence threshold
+                        print(f"{list(antecedent)} -> {list(consequent)}: {confidence}")
