@@ -52,14 +52,14 @@ def id3(X, y):
         tree[value] = subtree
     return tree
 
-def split_info(X, y, feature_idx):
-    unique_values = np.unique(X[:, feature_idx])
-    split_info_val = 0
-    for value in unique_values:
-        indices = np.where(X[:, feature_idx] == value)[0]
-        proportion = len(indices) / len(y)
-        split_info_val -= proportion * math.log2(proportion)
-    return split_info_val
+# def split_info(X, y, feature_idx):
+#     unique_values = np.unique(X[:, feature_idx])
+#     split_info_val = 0
+#     for value in unique_values:
+#         indices = np.where(X[:, feature_idx] == value)[0]
+#         proportion = len(indices) / len(y)
+#         split_info_val -= proportion * math.log2(proportion)
+#     return split_info_val
 
 # def gain_ratio(X, y, feature_idx):
 #     info_gain = information_gain(X, y, feature_idx)

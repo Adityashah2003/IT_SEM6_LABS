@@ -7,7 +7,7 @@ def auto_map_attributes(data):
         attribute_maps[column] = {value: index for index, value in enumerate(unique_values)}
     return attribute_maps
 
-def convert_csv(csv_file):
+def algo(csv_file):
     # Read the CSV file
     data = pd.read_csv(csv_file)
 
@@ -54,6 +54,6 @@ def convert_csv(csv_file):
     return data
 
 csv_file = 'L5-L9/data.csv'
-dataset = convert_csv(csv_file)
+dataset = algo(csv_file)
 
 # print(dataset)

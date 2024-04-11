@@ -71,5 +71,5 @@ for itemset in frequent_itemsets:
                 antecedent_count = frequent_itemsets.get(antecedent, 0)
                 if antecedent_count != 0:
                     confidence = frequent_itemsets[itemset] / antecedent_count
-                    if confidence >= 0.5:  # Set your confidence threshold
+                    if confidence >= 0.7:  # Set your confidence threshold
                         print(f"{list(antecedent)} -> {list(consequent)}: {confidence}")
