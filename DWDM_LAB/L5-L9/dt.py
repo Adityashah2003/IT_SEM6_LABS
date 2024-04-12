@@ -161,7 +161,7 @@ def evaluate_algorithm(dataset, algorithm):
     accuracy = accuracy_metric(y_test, predictions)
     return accuracy
 
-filename = 'L5-L9/data.csv'
+filename = 'data.csv'
 features, dataset = read_data_from_csv(filename)  # Extract features and data
 
 # print("Features:", features)

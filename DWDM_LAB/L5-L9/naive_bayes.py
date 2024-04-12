@@ -4,11 +4,12 @@ def auto_map_attributes(data):
     attribute_maps = {}
     for column in data.columns:
         unique_values = data[column].unique()
-        attribute_maps[column] = {value: index for index, value in enumerate(unique_values)}
+        attribute_maps[column] = {}
+        for index, value in enumerate(unique_values):
+            attribute_maps[column][value] = index
     return attribute_maps
 
 def algo(csv_file):
-    # Read the CSV file
     data = pd.read_csv(csv_file)
 
     # Generate attribute mappings
@@ -53,7 +54,7 @@ def algo(csv_file):
 
     return data
 
-csv_file = 'L5-L9/data.csv'
+csv_file = 'data.csv'
 dataset = algo(csv_file)
 
 # print(dataset)

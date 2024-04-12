@@ -5,7 +5,7 @@ from collections import defaultdict
 
 data = defaultdict(list)
 
-with open('L5-L9/transactions.txt', 'r') as file:
+with open('transactions.txt', 'r') as file:
     for line in file:
         items = line.strip().split()
         transaction_id = 'T' + str(len(data) + 1)  
@@ -27,9 +27,12 @@ print("Unique Items:", init)
 min_support_count = 2
 
 # Calculate support count for each item
-item_counts = {}
+item_counts = {}  
 for item in init:
-    count = sum(item in transaction for transaction in data.values())
+    count = 0  
+    for transaction in data.values():
+        if item in transaction:
+            count += 1 
     item_counts[item] = count
 
 print("C1:")
@@ -37,7 +40,11 @@ for item, count in item_counts.items():
     print(f"[{item}]: {count}")
 
 # Find frequent 1-itemsets (L1)
-frequent_1_itemsets = {frozenset([item]): count for item, count in item_counts.items() if count >= min_support_count}
+frequent_1_itemsets = {} 
+for item, count in item_counts.items():
+    if count >= min_support_count:
+        itemset = frozenset([item])
+        frequent_1_itemsets[itemset] = count
 
 print("\nL1:")
 for itemset, count in frequent_1_itemsets.items():
@@ -46,10 +53,21 @@ for itemset, count in frequent_1_itemsets.items():
 # Generate frequent itemsets and association rules
 frequent_itemsets = frequent_1_itemsets
 for size in range(2, len(init) + 1):
-    candidate_itemsets = [set(itemset) for itemset in combinations(init, size)]
+    candidate_itemsets = []
+    for itemset in combinations(init, size):
+        candidate_itemsets.append(set(itemset))
+        
     frequent_itemsets_next = {}
     for candidate in candidate_itemsets:
-        support_count = sum(all(item in transaction for item in candidate) for transaction in data.values())
+        support_count = 0
+        for transaction in data.values():
+            items_present = []
+            for item in candidate:
+                if item in transaction:
+                    items_present.append(item)
+            if len(items_present) == len(candidate):
+                support_count += 1
+
         if support_count >= min_support_count:
             frequent_itemsets_next[frozenset(candidate)] = support_count
     if not frequent_itemsets_next:
