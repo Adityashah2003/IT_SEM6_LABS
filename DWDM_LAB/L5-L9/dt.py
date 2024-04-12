@@ -7,8 +7,10 @@ def read_data_from_csv(filename):
     with open(filename, 'r') as file:
         reader = csv.reader(file)
         data = list(reader)
-    features = data[0]  # Extract feature names
-    data = data[1:]      # Remove feature names from data
+    features = data[0]  
+    data = data[1:]     
+    print(features)
+    print(data)
     return features, data
 
 def train_test_split(data, split_ratio):
@@ -23,7 +25,7 @@ def train_test_split(data, split_ratio):
 def entropy(y):
     unique, counts = np.unique(y, return_counts=True)
     probabilities = counts / len(y)
-    entropy_val = -np.sum(probabilities * np.log2(probabilities))
+    entropy_val = -np.sum(probabilities * np.log2(probabilities)) 
     return entropy_val
 
 def information_gain(X, y, feature_idx):
@@ -51,6 +53,58 @@ def id3(X, y):
         subtree = id3(X_subset, y_subset)
         tree[value] = subtree
     return tree
+
+def predict(tree, sample):
+    if 'feature' in tree:
+        value = sample[tree['feature']]
+        if value in tree:
+            return predict(tree[value], sample)
+        else:
+            # print("No key for value:", value)
+            print("Tree:", tree)
+    else:
+        # print("No 'feature' key in tree")
+        print("Tree:", tree)
+    return tree['label']
+
+
+def accuracy_metric(actual, predicted):
+    correct = sum(1 for i in range(len(actual)) if actual[i] == predicted[i])
+    return correct / float(len(actual)) * 100.0
+
+def evaluate_algorithm(dataset, algorithm):
+    train_set, test_set = train_test_split(dataset, 0.8)
+    X_train = np.array([row[:-1] for row in train_set])
+    y_train = np.array([row[-1] for row in train_set])
+    X_test = np.array([row[:-1] for row in test_set])
+    y_test = np.array([row[-1] for row in test_set])
+    tree = algorithm(X_train, y_train)
+    predictions = [predict(tree, sample) for sample in X_test]
+    accuracy = accuracy_metric(y_test, predictions)
+    return accuracy
+
+filename = 'data.csv'
+features, dataset = read_data_from_csv(filename)  # Extract features and data
+
+# print("Features:", features)
+# print("Data:", dataset)
+
+# Convert feature names to numerical indices
+feature_indices = {feature: i for i, feature in enumerate(features)}
+
+# print("Feature Indices:", feature_indices)
+
+# ID3
+id3_accuracy = evaluate_algorithm(dataset, id3)
+print('ID3 Accuracy:', id3_accuracy)
+
+# # C4.5
+# c45_accuracy = evaluate_algorithm(dataset, c45)
+# print('C4.5 Accuracy:', c45_accuracy)
+
+# # CART
+# cart_accuracy = evaluate_algorithm(dataset, cart)
+# print('CART Accuracy:', cart_accuracy)
 
 # def split_info(X, y, feature_idx):
 #     unique_values = np.unique(X[:, feature_idx])
@@ -131,55 +185,3 @@ def id3(X, y):
 #         subtree = cart(X_subset, y_subset)
 #         tree[value] = subtree
 #     return tree
-
-def predict(tree, sample):
-    if 'feature' in tree:
-        value = sample[tree['feature']]
-        if value in tree:
-            return predict(tree[value], sample)
-        else:
-            # print("No key for value:", value)
-            print("Tree:", tree)
-    else:
-        # print("No 'feature' key in tree")
-        print("Tree:", tree)
-    return tree['label']
-
-
-def accuracy_metric(actual, predicted):
-    correct = sum(1 for i in range(len(actual)) if actual[i] == predicted[i])
-    return correct / float(len(actual)) * 100.0
-
-def evaluate_algorithm(dataset, algorithm):
-    train_set, test_set = train_test_split(dataset, 0.8)
-    X_train = np.array([row[:-1] for row in train_set])
-    y_train = np.array([row[-1] for row in train_set])
-    X_test = np.array([row[:-1] for row in test_set])
-    y_test = np.array([row[-1] for row in test_set])
-    tree = algorithm(X_train, y_train)
-    predictions = [predict(tree, sample) for sample in X_test]
-    accuracy = accuracy_metric(y_test, predictions)
-    return accuracy
-
-filename = 'data.csv'
-features, dataset = read_data_from_csv(filename)  # Extract features and data
-
-# print("Features:", features)
-# print("Data:", dataset)
-
-# Convert feature names to numerical indices
-feature_indices = {feature: i for i, feature in enumerate(features)}
-
-# print("Feature Indices:", feature_indices)
-
-# ID3
-id3_accuracy = evaluate_algorithm(dataset, id3)
-print('ID3 Accuracy:', id3_accuracy)
-
-# # C4.5
-# c45_accuracy = evaluate_algorithm(dataset, c45)
-# print('C4.5 Accuracy:', c45_accuracy)
-
-# # CART
-# cart_accuracy = evaluate_algorithm(dataset, cart)
-# print('CART Accuracy:', cart_accuracy)
