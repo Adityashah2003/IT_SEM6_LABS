@@ -8,4 +8,4 @@ conn.execute("INSERT INTO STUDENT VALUES (3, 193, 'CSE', 4, 'A', 7.25, 'abc3@gma
 conn.execute("INSERT INTO STUDENT VALUES (4, 194, 'EEE', 4, 'A', 8.08, 'abc4@gmail.com' )");
 conn.commit()
 print ("Records created successfully")
-conn.close()
+conn.close()

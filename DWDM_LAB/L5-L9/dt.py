@@ -7,8 +7,8 @@ def read_data_from_csv(filename):
     with open(filename, 'r') as file:
         reader = csv.reader(file)
         data = list(reader)
-    features = data[0]  
-    data = data[1:]     
+    features = data[0]  # Extract feature names
+    data = data[1:]      # Remove feature names from data
     print(features)
     print(data)
     return features, data
